@@ -2,7 +2,7 @@
 
 An easy-to-use program for generating a readme description on github
 
-## Code Example
+## you need
 ```
 pip install tk ttkthemes
 ```
