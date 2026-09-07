@@ -2,8 +2,8 @@
 
 # 📝 GitHub README Generator
 
-**Desktop Markdown README builder by Swir**  
-**Desktopowy generator plików README Markdown autorstwa Swir**
+**Python GUI Markdown README generator with tables, code blocks, images and live preview**  
+**Graficzny generator README Markdown w Pythonie z tabelami, kodem, obrazami i podglądem**
 
 ![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
 ![GUI](https://img.shields.io/badge/GUI-Tkinter%20%2B%20ttkthemes-2ea44f)
@@ -16,7 +16,7 @@
 
 ## 🇬🇧 English
 
-GitHub README Generator is a graphical Python utility that helps build Markdown README files without manually writing all Markdown syntax. Fill in project information, preview the generated document and save it directly to a file.
+GitHub README Generator is a graphical Python Markdown editor and README builder that helps create GitHub project documentation without manually writing all Markdown syntax. Fill in project information, generate tables and code sections, preview the document and save the finished README to a file.
 
 ### ✨ Features
 - project title and description fields
@@ -41,7 +41,7 @@ python main.py
 
 ## 🇵🇱 Polski
 
-GitHub README Generator to graficzne narzędzie Python ułatwiające tworzenie plików README w Markdown bez ręcznego wpisywania całej składni. Uzupełniasz dane projektu, generujesz podgląd i zapisujesz gotowy dokument do pliku.
+GitHub README Generator to graficzne narzędzie Python, edytor Markdown i kreator dokumentacji GitHub ułatwiający tworzenie plików README bez ręcznego wpisywania całej składni. Uzupełniasz dane projektu, generujesz tabele i sekcje kodu, wyświetlasz podgląd i zapisujesz gotowy dokument.
 
 ### ✨ Funkcje
 - pola tytułu i opisu projektu
@@ -53,12 +53,10 @@ GitHub README Generator to graficzne narzędzie Python ułatwiające tworzenie p
 - zapis Markdown do pliku
 - interfejs w motywie Ubuntu
 
-### 🚀 Instalacja
+### 🔎 Discoverability / Keywords
+`readme generator` • `github readme generator` • `markdown generator` • `markdown editor python` • `python readme builder` • `tkinter markdown` • `github documentation tool`
 
-```bash
-pip install ttkthemes
-python main.py
-```
+---
 
 ## 👤 Author / Autor
 Developed by **Swir**.
