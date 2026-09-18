@@ -1,105 +1,128 @@
+<!-- SWIR-README-STANDARD:v2 -->
+
 <div align="center">
 
-# 📝 GitHub README Generator
+<img width="100%" src="assets/readme/hero.svg" alt="GitHub README Generator — desktop Markdown README builder" />
 
-### Desktop Markdown README Builder for GitHub Projects
+<br>
 
-**Python • Tkinter • ttkthemes • Tables • Code Blocks • Images • Preview**
+![Python](https://img.shields.io/badge/Python-3.11-02050A?style=for-the-badge&logo=python&logoColor=62E5FF)
+![GUI](https://img.shields.io/badge/GUI-Tkinter-02050A?style=for-the-badge&logo=python&logoColor=62E5FF)
+![Output](https://img.shields.io/badge/Output-Markdown-02050A?style=for-the-badge&logo=markdown&logoColor=62E5FF)
+![Release](https://img.shields.io/badge/Release-v1.0.0-02050A?style=for-the-badge&logo=github&logoColor=62E5FF)
 
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
-![Tkinter](https://img.shields.io/badge/GUI-Tkinter-2ea44f)
-![Theme](https://img.shields.io/badge/Theme-Ubuntu-E95420?logo=ubuntu&logoColor=white)
-![Markdown](https://img.shields.io/badge/Output-Markdown-000000?logo=markdown)
-![Author](https://img.shields.io/badge/Author-Swir-ff4fa3)
+[![Author](https://img.shields.io/badge/Author-Swir-0088FF?style=flat-square&logo=github)](https://github.com/Swir)
+[![Stars](https://img.shields.io/github/stars/Swir/Github-README-Generator?style=flat-square&color=0088FF)](https://github.com/Swir/Github-README-Generator/stargazers)
 
 </div>
 
----
+GitHub README Generator is a lightweight desktop utility for composing simple Markdown README files without manually typing every Markdown structure.
 
-## 🚀 About
+## 📍 Project Status
 
-**GitHub README Generator** is a lightweight desktop application for building Markdown README files without manually writing every Markdown element.
+<img width="100%" src="assets/readme/progress-card.svg" alt="GitHub README Generator product progress — N/A because no authoritative roadmap exists" />
 
-Enter your project title and description, generate tables, add code examples and images, preview the result and save the finished documentation directly as a `.md` file.
+**Product progress:** **N/A** — this legacy utility has no authoritative, measurable product roadmap. The published release is not treated as a completion percentage.
 
-It is designed for users searching for a **GitHub README generator**, **Markdown README builder**, **Python Markdown editor**, **Tkinter README creator** or a simple desktop documentation tool.
-
----
-
-## ✨ Features
-
-| Feature | Description |
+| Item | Status |
 |---|---|
-| 🏷️ Project title | Generate the main Markdown heading |
-| 📝 Description | Add project overview text |
-| 📊 Table generator | Create Markdown tables from entered data |
-| 🧾 Optional header | Enable or disable table headers |
-| 💻 Code examples | Add fenced code sections |
-| 🖼️ Images | Add image URL and alt text |
-| 👁️ Preview | Preview the generated README before saving |
-| 💾 Export | Save the final Markdown to a `.md` file |
-| 🧹 Clear | Reset all form fields quickly |
-| 🐧 Ubuntu theme | Desktop interface styled with `ttkthemes` |
+| Current stage | Released utility |
+| Primary UI | Tkinter + `ttkthemes` |
+| Verified release workflow runtime | Python 3.11 on Windows |
+| Latest public release | [v1.0.0](https://github.com/Swir/Github-README-Generator/releases/tag/v1.0.0) |
+| Product roadmap | Not present |
 
----
+## 🚀 Overview
 
-## 📦 Installation
+The application collects a project title, description, optional Markdown table, code example and image metadata, then generates a Markdown document that can be previewed in the GUI and saved as a `.md` file. The current implementation is intentionally small and direct; it is a README drafting utility rather than a full Markdown IDE.
+
+## ✨ Highlights
+
+| Feature | What it does |
+|---|---|
+| 🏷️ Project title and description | Creates the main heading and wrapped overview text |
+| 📊 Table builder | Builds Markdown tables from comma-separated headers and row data |
+| 🧾 Optional table header | Lets the generated table omit the header row when desired |
+| 💻 Code section | Adds a fenced code example section |
+| 🖼️ Image block | Generates Markdown image syntax from a URL and alternative text |
+| 👁️ Preview | Opens the generated Markdown in a read-only preview window |
+| 💾 Save | Writes the generated README to a user-selected `.md` file |
+| 🧹 Clear | Resets form fields and generated output |
+| 🐧 Ubuntu theme | Uses the `ttkthemes` Ubuntu theme for the desktop interface |
+
+## ⚙️ Quick Start
+
+### Recommended Windows build
+
+Download the real **v1.0.0** release. It contains the Windows EXE, a portable Windows x64 ZIP and a SHA-256 file for that ZIP.
+
+[**Open GitHub Releases →**](https://github.com/Swir/Github-README-Generator/releases)
+
+### From source
 
 ```bash
 git clone https://github.com/Swir/Github-README-Generator.git
 cd Github-README-Generator
-pip install ttkthemes
+python -m pip install ttkthemes
 python main.py
 ```
 
----
+The repository release workflow validates `main.py` with Python 3.11 and builds the Windows executable with PyInstaller. The source itself has no declared cross-platform CI matrix, so broader runtime support is not claimed here.
 
-## ▶️ How to Use
+## 🎮 Usage
 
-1. Enter a project title.
-2. Add a description.
-3. Optionally enter table headers and rows.
-4. Add a code example if needed.
-5. Add an image URL and alternative text.
-6. Click **Preview README**.
-7. Click **Generate README**.
-8. Save the generated Markdown to a file.
+1. Enter a project title and optional description.
+2. Add comma-separated table headers and row data if needed.
+3. Add a code example and/or image URL plus alt text.
+4. Choose whether a table header should be included.
+5. Use **Preview README** to inspect the generated Markdown.
+6. Use **Generate README** to refresh the main output.
+7. Use **Save README to File** to write the result to disk.
 
----
+## 🧠 Implementation
 
-## 🧩 Project Structure
+| Layer | Technology / role |
+|---|---|
+| Desktop UI | Python `tkinter` / `ttk` |
+| Theme | `ttkthemes` (`ubuntu`) |
+| Markdown generation | Python string assembly + `textwrap` |
+| Preview | Tkinter `Toplevel` + read-only `ScrolledText` |
+| Windows packaging | PyInstaller in the repository release workflow |
 
-```text
-Github-README-Generator/
-├── main.py      # Tkinter application
-└── readme.md    # Project documentation
-```
+## 🗺️ Roadmap / Progress
 
----
+<img width="100%" src="assets/readme/progress-mini.svg" alt="GitHub README Generator compact product progress — N/A" />
 
-## 🔍 Discoverability
+**Measured scope:** product roadmap · **Progress:** N/A · **Counter:** N/A — no canonical checklist or weighted roadmap exists.
 
-`github readme generator` • `readme generator python` • `markdown generator gui` • `markdown editor python` • `readme builder desktop` • `tkinter markdown editor` • `github documentation generator` • `markdown table generator` • `readme creator`
+The SVG deliberately shows **N/A** instead of inventing a completion percentage from the v1.0.0 release, commit count or documentation state.
 
----
+## 📦 Releases
 
-## 💡 Good For
+The latest verified public release is **v1.0.0**. The release workflow validates the Python source, builds a one-file windowed EXE, packages a portable ZIP and writes a SHA-256 file for the ZIP.
 
-- quickly scaffolding new GitHub project documentation
-- learning basic Markdown structure
-- generating tables without remembering Markdown syntax
-- creating simple README drafts from a desktop GUI
+[**GitHub Releases →**](https://github.com/Swir/Github-README-Generator/releases)
 
----
+## ⚠️ Limitations
 
-## 👨‍💻 Author
+- The table input uses a simple comma-separated format rather than a full structured editor.
+- The generated code block does not assign a syntax language.
+- Image support inserts Markdown links; it does not upload or manage image files.
+- The preview is plain text, not a rendered GitHub Markdown browser.
+- No authoritative roadmap exists, so product completion is intentionally reported as N/A.
 
-Developed by **Swir** — [@Swir](https://github.com/Swir)
+## 🔎 Search Keywords
+
+`github readme generator` • `markdown readme builder` • `python markdown gui` • `tkinter readme generator` • `desktop markdown tool` • `markdown table generator` • `github documentation utility` • `readme preview tool` • `python tkinter utility` • `windows readme generator` • `markdown image syntax` • `markdown code block generator`
 
 <div align="center">
 
-### 📝 Build a README without fighting Markdown syntax
+<img src="assets/readme/icon.svg" width="96" alt="GitHub README Generator icon" />
 
-⭐ **Star the repository if it saves you time!**
+### `WRITE • PREVIEW • SAVE • DOCUMENT`
+
+⭐ **If this utility is useful, consider leaving a star.**
+
+[**← SWIR profile**](https://github.com/Swir) · [**All projects →**](https://github.com/Swir?tab=repositories)
 
 </div>
