@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220" role="img" aria-labelledby="title desc">
+<title id="title">GitHub README Generator icon</title><desc id="desc">Electric cyan document and Markdown symbol on a dark SWIR background.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#02050A"/><stop offset="1" stop-color="#07111C"/></linearGradient><linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0088FF"/><stop offset="1" stop-color="#62E5FF"/></linearGradient></defs>
+<rect x="1" y="1" width="218" height="218" rx="48" fill="url(#bg)" stroke="#62E5FF" stroke-opacity=".45"/>
+<path d="M62 38h67l29 29v115H62z" fill="none" stroke="url(#cyan)" stroke-width="9" stroke-linejoin="round"/>
+<path d="M129 38v34h34M82 104l17 18 17-18M99 122v30M126 104h18l13 48" fill="none" stroke="#62E5FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
