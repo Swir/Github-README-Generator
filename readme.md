@@ -16,6 +16,12 @@
 
 </div>
 
+## 📸 Screenshot
+
+![Github-README-Generator application screenshot](docs/screenshots/application.jpg)
+
+Initial README generator window on Windows.
+
 GitHub README Generator is a lightweight desktop utility for composing simple Markdown README files without manually typing every Markdown structure.
 
 ## 📍 Project Status
