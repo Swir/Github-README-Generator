@@ -1,162 +1,177 @@
+"""Small desktop README composer with CSV tables and safe UTF-8 export."""
+import json
+from pathlib import Path
+import sys
+import tempfile
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog, scrolledtext
-import textwrap
+from tkinter import ttk, filedialog, scrolledtext
 from ttkthemes import ThemedStyle
+from markdown_core import generate_readme, save_markdown
+
+VERSION = "1.1.0"
+
 
 class ReadmeGenerator:
     def __init__(self, root):
         self.root = root
-        self.root.title("Readme Generator by Swir 1.0")
+        root.title(f"README Generator {VERSION} — Swir")
+        root.geometry("960x820")
+        root.minsize(680, 540)
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
+        style = ThemedStyle(root)
+        try:
+            style.set_theme("ubuntu")
+        except tk.TclError:
+            style.theme_use("clam")
+        frame = ttk.Frame(root, padding=14)
+        frame.grid(sticky="nsew")
+        frame.columnconfigure(1, weight=1)
+        frame.rowconfigure(10, weight=1)
+        self.title = tk.StringVar(root)
+        self.headers = tk.StringVar(root)
+        self.language = tk.StringVar(root)
+        self.image_url = tk.StringVar(root)
+        self.image_alt = tk.StringVar(root)
+        self.include_table_header = tk.BooleanVar(root, True)
+        self.status = tk.StringVar(root)
+        self.title_entry = ttk.Entry(frame, textvariable=self.title)
+        self.description_entry = scrolledtext.ScrolledText(frame, height=3, wrap="word")
+        self.headers_entry = ttk.Entry(frame, textvariable=self.headers)
+        self.data_entry = scrolledtext.ScrolledText(frame, height=4, wrap="none")
+        self.code_entry = scrolledtext.ScrolledText(frame, height=4, wrap="none", font=("Consolas", 10))
+        self.language_entry = ttk.Entry(frame, textvariable=self.language)
+        self.image_url_entry = ttk.Entry(frame, textvariable=self.image_url)
+        self.image_alt_entry = ttk.Entry(frame, textvariable=self.image_alt)
+        controls = [("Project title:", self.title_entry), ("Description:", self.description_entry),
+                    ("Headers (one CSV row):", self.headers_entry), ("Data (one CSV row per line):", self.data_entry),
+                    ("Code example:", self.code_entry), ("Code language (optional):", self.language_entry),
+                    ("Image URL or relative path:", self.image_url_entry), ("Image alternative text:", self.image_alt_entry)]
+        for row, (label, widget) in enumerate(controls):
+            ttk.Label(frame, text=label).grid(row=row, column=0, sticky="nw", padx=(0, 12), pady=4)
+            widget.grid(row=row, column=1, sticky="ew", pady=4)
+        ttk.Checkbutton(frame, text="Include table header labels", variable=self.include_table_header).grid(row=8, column=1, sticky="w", pady=4)
+        buttons = ttk.Frame(frame)
+        buttons.grid(row=9, column=0, columnspan=2, pady=8)
+        self.generate_button = ttk.Button(buttons, text="Generate README", command=self.generate_readme)
+        self.generate_button.pack(side="left", padx=4)
+        ttk.Button(buttons, text="Preview Markdown", command=self.preview_readme).pack(side="left", padx=4)
+        ttk.Button(buttons, text="Save README…", command=self.save_to_file).pack(side="left", padx=4)
+        ttk.Button(buttons, text="Clear fields", command=self.clear_fields).pack(side="left", padx=4)
+        self.generated_text = scrolledtext.ScrolledText(frame, height=10, wrap="none", font=("Consolas", 10), state="disabled")
+        self.generated_text.grid(row=10, column=0, columnspan=2, sticky="nsew")
+        horizontal = ttk.Scrollbar(frame, orient="horizontal", command=self.generated_text.xview)
+        horizontal.grid(row=11, column=0, columnspan=2, sticky="ew")
+        self.generated_text.configure(xscrollcommand=horizontal.set)
+        ttk.Label(frame, textvariable=self.status, wraplength=850).grid(row=12, column=0, columnspan=2, sticky="ew", pady=(8, 0))
 
-        self.create_widgets()
+    def content(self):
+        return generate_readme(self.title.get(), self.description_entry.get("1.0", "end-1c"), self.headers.get(),
+                               self.data_entry.get("1.0", "end-1c"), self.code_entry.get("1.0", "end-1c"),
+                               self.image_url.get(), self.image_alt.get(), self.include_table_header.get(), self.language.get())
 
-    def create_widgets(self):
-        style = ThemedStyle(self.root)
-        style.set_theme("ubuntu")
-
-        self.title_label = ttk.Label(self.root, text="Title:")
-        self.title_entry = ttk.Entry(self.root, width=30)
-
-        self.description_label = ttk.Label(self.root, text="Description:")
-        self.description_entry = ttk.Entry(self.root, width=30)
-
-        self.headers_label = ttk.Label(self.root, text="Table Headers (comma-separated):")
-        self.headers_entry = ttk.Entry(self.root, width=30)
-
-        self.data_label = ttk.Label(self.root, text="Table Data (rows, comma-separated):")
-        self.data_entry = ttk.Entry(self.root, width=30)
-
-        self.code_label = ttk.Label(self.root, text="Code Example:")
-        self.code_entry = ttk.Entry(self.root, width=30)
-
-        self.image_url_label = ttk.Label(self.root, text="Image URL:")
-        self.image_url_entry = ttk.Entry(self.root, width=30)
-
-        self.image_alt_label = ttk.Label(self.root, text="Image Alt Text:")
-        self.image_alt_entry = ttk.Entry(self.root, width=30)
-
-        self.include_table_header = tk.BooleanVar()
-        self.include_table_header.set(True)
-        self.include_table_header_checkbox = ttk.Checkbutton(self.root, text="Include Table Header", variable=self.include_table_header)
-
-        self.generated_text = scrolledtext.ScrolledText(self.root, wrap="none", bg="#f0f0f0", fg="black", font=("Arial", 10))
-        self.generated_text.config(state="disabled", height=20, width=80)
-
-        self.preview_button = ttk.Button(self.root, text="Preview README", command=self.preview_readme)
-        self.generate_button = ttk.Button(self.root, text="Generate README", command=self.generate_readme)
-        self.clear_button = ttk.Button(self.root, text="Clear Fields", command=self.clear_fields)
-        self.save_button = ttk.Button(self.root, text="Save README to File", command=self.save_to_file)
-
-        # Layout
-        rows = 0
-        for widget in (self.title_label, self.title_entry, self.description_label, self.description_entry,
-                       self.headers_label, self.headers_entry, self.data_label, self.data_entry,
-                       self.code_label, self.code_entry, self.image_url_label, self.image_url_entry,
-                       self.image_alt_label, self.image_alt_entry, self.include_table_header_checkbox,
-                       self.generated_text, self.preview_button, self.generate_button, self.clear_button, self.save_button):
-            widget.grid(row=rows // 2, column=rows % 2, sticky="w", pady=(10, 0))
-            rows += 1
+    def display_readme(self, text):
+        self.generated_text.configure(state="normal")
+        self.generated_text.delete("1.0", "end")
+        self.generated_text.insert("1.0", text)
+        self.generated_text.configure(state="disabled")
 
     def generate_readme(self):
-        title = self.title_entry.get().strip()
-        description = self.description_entry.get().strip()
-        headers = [header.strip() for header in self.headers_entry.get().split(',')]
-        data = [row.strip().split(',') for row in self.data_entry.get().split(',')]
-        code_example = self.code_entry.get().strip()
-        image_url = self.image_url_entry.get().strip()
-        image_alt_text = self.image_alt_entry.get().strip()
-
-        readme_text = self.generate_readme_content(title, description, headers, data, code_example, image_url, image_alt_text)
-
-        self.display_readme(readme_text)
-
-    def generate_readme_content(self, title, description, headers, data, code_example, image_url, image_alt_text):
-        content = []
-
-        if title:
-            content.append(f"# {title}\n\n")
-
-        if description:
-            content.append(f"{textwrap.fill(description, width=80)}\n\n")
-
-        if headers and any(data_row for data_row in data if any(field.strip() for field in data_row)):
-            header_row = ' | '.join(headers) if self.include_table_header.get() else ''
-            separator = '|'.join(['---' for _ in headers])
-            table_content = f"{header_row}\n{separator}\n"
-            table_content += '\n'.join([' | '.join(row) for row in data if any(field.strip() for field in row)])
-            content.append(f"## Table\n{table_content}\n")
-
-        if code_example:
-            content.append(f"## Code Example\n```\n{code_example}\n```\n")
-
-        if image_url and image_alt_text:
-            content.append(f"## Image\n![{image_alt_text}]({image_url})\n")
-
-        return ''.join(content)
-
-    def display_readme(self, readme_text):
-        self.generated_text.config(state="normal")
-        self.generated_text.delete(1.0, tk.END)
-        self.generated_text.insert(tk.END, readme_text)
-        self.generated_text.config(state="disabled")
-
-    def clear_fields(self):
-        for entry in [self.title_entry, self.description_entry, self.headers_entry, self.data_entry,
-                      self.code_entry, self.image_url_entry, self.image_alt_entry]:
-            entry.delete(0, tk.END)
-
-        self.include_table_header.set(True)
-        self.generated_text.config(state="normal")
-        self.generated_text.delete(1.0, tk.END)
-        self.generated_text.config(state="disabled")
-
-    def save_to_file(self):
-        title = self.title_entry.get().strip()
-        if not title:
-            messagebox.showerror("Error", "Title must be filled before saving to file.")
-            return
-
-        readme_text = self.generate_readme_content(
-            title,
-            self.description_entry.get().strip(),
-            [header.strip() for header in self.headers_entry.get().split(',')],
-            [row.strip().split(',') for row in self.data_entry.get().split(',')],
-            self.code_entry.get().strip(),
-            self.image_url_entry.get().strip(),
-            self.image_alt_entry.get().strip()
-        )
-
-        file_path = self.ask_for_file_path()
-        if file_path:
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(readme_text)
-
-            messagebox.showinfo("Success", f"README saved to {file_path}")
-
-    def ask_for_file_path(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".md", filetypes=[("Markdown files", "*.md")])
-        return file_path if file_path else None
+        try:
+            content = self.content()
+        except ValueError as error:
+            self.status.set(str(error))
+            self.display_readme("")
+            return None
+        self.display_readme(content)
+        self.status.set("README generated.")
+        return content
 
     def preview_readme(self):
-        title = self.title_entry.get().strip()
-        description = self.description_entry.get().strip()
-        headers = [header.strip() for header in self.headers_entry.get().split(',')]
-        data = [row.strip().split(',') for row in self.data_entry.get().split(',')]
-        code_example = self.code_entry.get().strip()
-        image_url = self.image_url_entry.get().strip()
-        image_alt_text = self.image_alt_entry.get().strip()
+        content = self.generate_readme()
+        if content is None:
+            return
+        window = tk.Toplevel(self.root)
+        window.title("README Markdown preview")
+        output = scrolledtext.ScrolledText(window, wrap="word", font=("Consolas", 10), width=90, height=30)
+        output.insert("1.0", content)
+        output.configure(state="disabled")
+        output.pack(expand=True, fill="both")
 
-        readme_text = self.generate_readme_content(title, description, headers, data, code_example, image_url, image_alt_text)
+    def save_to_file(self, path=None):
+        content = self.generate_readme()
+        if content is None:
+            return False
+        if path is None:
+            path = filedialog.asksaveasfilename(parent=self.root, defaultextension=".md", initialfile="README.md", filetypes=[("Markdown files", "*.md")])
+        if not path:
+            self.status.set("Save cancelled.")
+            return False
+        try:
+            save_markdown(path, content)
+        except OSError as error:
+            self.status.set(f"Could not save README: {error}")
+            return False
+        self.status.set(f"Saved: {path}")
+        return True
 
-        preview_window = tk.Toplevel(self.root)
-        preview_window.title("Preview README")
+    def clear_fields(self):
+        for variable in (self.title, self.headers, self.language, self.image_url, self.image_alt):
+            variable.set("")
+        for widget in (self.description_entry, self.data_entry, self.code_entry):
+            widget.delete("1.0", "end")
+        self.include_table_header.set(True)
+        self.display_readme("")
+        self.status.set("")
 
-        preview_text = scrolledtext.ScrolledText(preview_window, wrap="none", bg="#f0f0f0", fg="black", font=("Arial", 10))
-        preview_text.insert(tk.END, readme_text)
-        preview_text.config(state="disabled", height=20, width=80)
-        preview_text.pack(expand=True, fill="both")
+
+def self_test(report):
+    root = None
+    result = {"application":"GitHub-README-Generator", "version":VERSION, "passed":False}
+    try:
+        parent = Path(report).resolve().parent
+        with tempfile.TemporaryDirectory(prefix="readme-smoke-", dir=parent) as folder:
+            if not Path(folder).resolve().is_relative_to(parent):
+                raise RuntimeError("Unexpected smoke-test directory")
+            root = tk.Tk()
+            root.withdraw()
+            app = ReadmeGenerator(root)
+            root.update_idletasks()
+            app.title.set("Demo")
+            app.headers.set("Name,Value")
+            app.data_entry.insert("1.0", '"Alice, Jr.",10\nBob,20')
+            app.code_entry.insert("1.0", 'print("Hello")\nprint("World")')
+            app.language.set("python")
+            app.generate_button.invoke()
+            content = app.generated_text.get("1.0", "end-1c")
+            assert "| Alice, Jr. | 10 |" in content and "| Bob | 20 |" in content and "```python" in content
+            destination = Path(folder) / "README.md"
+            assert app.save_to_file(destination)
+            assert destination.read_text(encoding="utf-8") == content
+            app.headers.set("OnlyOne")
+            assert app.generate_readme() is None
+            app.clear_fields()
+            assert not app.title.get() and not app.generated_text.get("1.0", "end-1c")
+            root.destroy()
+            root = None
+            result.update(passed=True, checks=["Tk and theme", "CSV table generation", "multiline code", "UTF-8 export", "invalid columns", "clear fields"])
+    except Exception as error:
+        result["error"] = f"{type(error).__name__}: {error}"
+    finally:
+        if root is not None:
+            root.destroy()
+        Path(report).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    return 0 if result["passed"] else 1
+
+
+def main():
+    if len(sys.argv) == 3 and sys.argv[1] == "--self-test":
+        return self_test(sys.argv[2])
+    root = tk.Tk()
+    ReadmeGenerator(root)
+    root.mainloop()
+    return 0
+
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = ReadmeGenerator(root)
-    root.mainloop()
+    raise SystemExit(main())

@@ -1,0 +1,18 @@
+{
+  "title": "GitHub README Generator",
+  "package": "GitHub-README-Generator",
+  "readme": "readme.md",
+  "applications": [
+    {
+      "name": "GitHub-README-Generator",
+      "entry": "main.py",
+      "collect": [
+        "ttkthemes"
+      ]
+    }
+  ],
+  "dependencies": [
+    "ttkthemes",
+    "Pillow"
+  ]
+}
